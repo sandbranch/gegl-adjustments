@@ -1,6 +1,6 @@
 #!/bin/sh
 # Starts GIMP on Broadway with the picture (ADJ_GUI_MODE: layer or
-# channel), does the given steps of gimp-plugin-devtools/gui/cdp.mjs
+# channel), does the given steps of gimp-devtools/gui/cdp.mjs
 # (positions on the page) and leaves a screenshot of the page in
 # tests/output/gui/look.png; then stops GIMP. For finding positions.
 #

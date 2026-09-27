@@ -3,7 +3,7 @@
 # repository) and $out (tests/output), and defines:
 #
 #   in_sdk <command line>   runs it in the repository, inside the Flatpak
-#                           GIMP's SDK (gimp-plugin-devtools/gimp-build.sh)
+#                           GIMP's SDK (gimp-devtools/gimp-build.sh)
 #                           or natively with GIMP_FLATPAK=0
 #   in_gimp <command...>    runs a command of the GIMP Flatpak (gegl,
 #                           python3, gimp-console-3.2) or natively; the
@@ -16,7 +16,7 @@
 #                           returns 1 if anything changed
 #
 # Everything runs isolated from the user's own folders with the shared
-# tests/isolate.sh (a copy of gimp-plugin-devtools/isolate.sh): HOME and
+# tests/isolate.sh (a copy of gimp-devtools/isolate.sh): HOME and
 # the XDG folders in the throwaway tests/output/home, inside the Flatpak
 # and for flatpak run itself, and no GVFS.
 #

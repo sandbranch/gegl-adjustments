@@ -34,7 +34,7 @@ GIMP issue [#15505](https://gitlab.gnome.org/GNOME/gimp/-/work_items/15505)
 "Not sure what the equivalent GEGL filter(s) would be", and draft MR
 [!2598](https://gitlab.gnome.org/GNOME/gimp/-/merge_requests/2598) maps
 Black & White to "similar GEGL operations" only. See
-gimp-plugin-devtools/docs/photoshop-gaps.md for the wider survey.
+gimp-devtools/docs/photoshop-gaps.md for the wider survey.
 
 None of the four exists in GEGL or GIMP 3.2.6. Checked on 2026-09-27:
 
@@ -322,7 +322,7 @@ newer).
     ninja -C build install
 
 For the Flatpak version of GIMP, build inside it with
-[gimp-plugin-devtools](https://github.com/sandbranch/gimp-plugin-devtools),
+[gimp-devtools](https://github.com/sandbranch/gimp-devtools),
 which installs the operations into
 `~/.var/app/org.gimp.GIMP/data/gegl-0.4/plug-ins` and the plug-in into
 GIMP's plug-in folder:
@@ -339,11 +339,11 @@ installed. On the command line:
 ## Tests
 
 None needs the network or a display. Every one runs isolated from your
-own folders with tests/isolate.sh (a copy of gimp-plugin-devtools'
+own folders with tests/isolate.sh (a copy of gimp-devtools'
 isolate.sh: HOME and the XDG folders in a throwaway tests/output/home,
 also for flatpak run itself, and no GVFS), and compares listings of your
 GIMP, Blender, Godot, Krita and Tiled folders before and after
-(gimp-plugin-devtools/snapshot.sh): each suite fails if anything there
+(gimp-devtools/snapshot.sh): each suite fails if anything there
 changed.
 
 - `tests/check.sh`: 130 checks (tests/check.c), built and run twice in the

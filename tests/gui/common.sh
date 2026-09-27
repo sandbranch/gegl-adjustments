@@ -6,7 +6,7 @@
 # (also on exit).
 #
 # Needs a headless Chrome (google-chrome or chromium), node 22 and
-# ../gimp-plugin-devtools (or GIMP_PLUGIN_DEVTOOLS) for gui/cdp.mjs.
+# ../gimp-devtools (or GIMP_PLUGIN_DEVTOOLS) for gui/cdp.mjs.
 #
 # Copyright 2026 David
 # SPDX-License-Identifier: LGPL-3.0-or-later
@@ -18,7 +18,7 @@ here=$(dirname "$gui")
 . "$here/common.sh"
 here=$gui
 gui_out=$out/gui
-devtools=${GIMP_PLUGIN_DEVTOOLS:-$top/../gimp-plugin-devtools}
+devtools=${GIMP_PLUGIN_DEVTOOLS:-$top/../gimp-devtools}
 cdp="node $devtools/gui/cdp.mjs"
 view=size:${ADJ_VIEW:-1280,860}
 

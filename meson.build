@@ -38,7 +38,7 @@ foreach op, sources : operations
 endforeach
 
 # the plug-in that makes the set of luminosity mask channels, with
-# -Dplugindir (e.g. the GIMP_PLUGINDIR of gimp-plugin-devtools)
+# -Dplugindir (e.g. the GIMP_PLUGINDIR of gimp-devtools)
 plugindir = get_option('plugindir')
 if plugindir != ''
   install_data('plug-ins/luminosity-masks/luminosity-masks.py',
