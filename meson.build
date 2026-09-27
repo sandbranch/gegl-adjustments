@@ -54,3 +54,10 @@ executable('adj-apply', 'tests/adj-apply.c',
   c_args: test_c_args,
   install: false,
 )
+
+# how long the operations take on a 24 megapixel image: tests/bench.sh
+executable('bench', 'tests/bench.c',
+  dependencies: [gegl_dep, math_dep],
+  c_args: test_c_args,
+  install: false,
+)
