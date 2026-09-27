@@ -53,6 +53,13 @@ None of the four exists in GEGL or GIMP 3.2.6. Checked on 2026-09-27:
   weights, inks or tonal series).
   GIMP's own `gimp:` operations (listed in `app/actions/filters-actions.c`)
   do not do them.
+- For luminosity masks there is another good GIMP 3 tool: Chuck Henrich's
+  [Interactive Luminosity Masks](https://www.chuckhenrich.com/gimp-interactive-luminosity-masks/)
+  (GPL-3.0+, 13 languages). It makes layer masks from 9 presets with a
+  live levels dialog, quick and friendly; the masks it makes are fixed
+  once made. This repository's filter keeps a mask live (also on a
+  channel) and adds Kuyper's Lights, Darks and Midtones 1 to 5, zones, and
+  saturation and hue ranges.
 - GIMP 3.2's PSD import (`plug-ins/file-psd`) knows the `selc` and `blwh`
   adjustment layer keys but does not convert them, and skips the layer
   blending ranges that Blend If is stored in (`psd-load.c`, "FIXME").
