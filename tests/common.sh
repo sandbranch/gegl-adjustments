@@ -10,7 +10,8 @@
 #                           home: HOME and the XDG folders are set inside
 #                           the sandbox to tests/output/home, GIO uses no
 #                           GVFS (GIO_USE_VFS=local), and the variables
-#                           named in $pass_env are passed on
+#                           named in $pass_env are passed on; $run_prefix
+#                           (e.g. "timeout 600") goes before it
 #   snapshot_begin          lists the user's GIMP folders (tests/snapshot.sh)
 #   snapshot_end            lists them again and fails if anything changed
 #
@@ -78,10 +79,10 @@ in_gimp () {
             envs="$envs --env=$v=$val"
         done
         # shellcheck disable=SC2086
-        flatpak run --sandbox --no-documents-portal --filesystem="$top" $envs \
+        $run_prefix flatpak run --sandbox --no-documents-portal --filesystem="$top" $envs \
           --command=sh org.gimp.GIMP -c "$home_env; exec $(quote_args "$@")"
     else
-        sh -c "$home_env; exec $(quote_args "$@")"
+        $run_prefix sh -c "$home_env; exec $(quote_args "$@")"
     fi
 }
 
