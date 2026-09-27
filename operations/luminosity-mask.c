@@ -70,13 +70,13 @@ enum_start (adj_luminosity_mask_kind)
 enum_end (AdjLuminosityMaskKind)
 
 enum_start (adj_luminosity_mask_series)
-  enum_value (ADJ_LM_SQUARES, "tk",     N_("TK (each squares the one before)"))
-  enum_value (ADJ_LM_POWERS,  "powers", N_("Powers (L to the power n)"))
+  enum_value (ADJ_LM_SQUARES, "tk",     N_("TK (squares)"))
+  enum_value (ADJ_LM_POWERS,  "powers", N_("Powers"))
 enum_end (AdjLuminosityMaskSeries)
 
 enum_start (adj_luminosity_mask_luminosity)
-  enum_value (ADJ_LM_GRAY,      "gray",      N_("Photoshop Gray (0.30 R + 0.59 G + 0.11 B)"))
-  enum_value (ADJ_LM_LUMINANCE, "luminance", N_("Luminance of the image's color space"))
+  enum_value (ADJ_LM_GRAY,      "gray",      N_("Photoshop Gray"))
+  enum_value (ADJ_LM_LUMINANCE, "luminance", N_("Luminance"))
   enum_value (ADJ_LM_LSTAR,     "lightness", N_("Lightness (CIE L*)"))
 enum_end (AdjLuminosityMaskLuminosity)
 
@@ -184,9 +184,12 @@ property_enum (fade, _("Fade"),
 property_enum (luminosity, _("Luminosity"),
                AdjLuminosityMaskLuminosity, adj_luminosity_mask_luminosity,
                ADJ_LM_GRAY)
-  description (_("The gray the tones are measured with. Photoshop Gray is "
-                 "what luminosity mask panels in Photoshop start from. On "
-                 "a channel the channel's own values are used."))
+  description (_("The gray the tones are measured with. Photoshop Gray "
+                 "(0.30 R + 0.59 G + 0.11 B of the display values) is what "
+                 "luminosity mask panels in Photoshop start from; Luminance "
+                 "is that of the image's color space, with its curve; "
+                 "Lightness is CIE L*. On a channel the channel's own values "
+                 "are used."))
   ui_meta ("visible", "mask {lights, darks, midtones, tonal-range}")
 
 property_boolean (invert, _("Invert"), FALSE)

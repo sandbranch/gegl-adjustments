@@ -50,7 +50,7 @@ AUTHOR = 'David'
 COPYRIGHT = 'Copyright 2026 David, LGPL-3.0-or-later'
 DATE = '2026'
 
-SERIES = [('tk', "TK: each level squares the one before (L, L^2, L^4, L^8, L^16)"),
+SERIES = [('tk', 'TK (squares: L, L^2, L^4, L^8, L^16)'),
           ('powers', 'Powers (L, L^2, L^3, L^4, L^5)')]
 LUMINOSITY = [('gray', 'Photoshop Gray (0.30 R + 0.59 G + 0.11 B)'),
               ('luminance', "Luminance of the image's color space"),

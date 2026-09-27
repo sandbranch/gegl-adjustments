@@ -133,12 +133,12 @@ property_color (tint_color, _("Tint color"), "#e1d3b3")
 static const gdouble presets[][6] =
   {
     [ADJ_BW_DEFAULT]   = {   40,  60,  40,  60,   20,   80 },
-    [ADJ_BW_RED]       = {  120, 110, -10, -50,  -50,   80 },
+    [ADJ_BW_RED]       = {  120, 110, -10, -30,  -20,   80 },
     [ADJ_BW_ORANGE]    = {  100, 120,  10, -30,  -40,   40 },
     [ADJ_BW_YELLOW]    = {   70, 110,  40,   0,  -20,   40 },
     [ADJ_BW_GREEN]     = {  -20,  80, 120,  60,  -20,  -20 },
     [ADJ_BW_BLUE]      = {  -20, -10,  10, 110,  150,   80 },
-    [ADJ_BW_HC_RED]    = {  180, 150, -40, -80, -100,  100 },
+    [ADJ_BW_HC_RED]    = {  160, 140, -40, -60,  -60,  100 },
     [ADJ_BW_HC_BLUE]   = {  -60, -40, -20, 140,  220,  100 },
     [ADJ_BW_INFRARED]  = {  -40, 230, 150, -70,  -80, -100 },
     [ADJ_BW_LIGHTER]   = {   60,  80,  60,  80,   40,  100 },
