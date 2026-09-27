@@ -46,6 +46,21 @@ run_prefix="timeout 1800" in_gimp $console --no-interface --no-data --no-fonts \
 grep -E "^(PASS|FAIL|NOTE)|failed$|Traceback|^  File|Error" "$out/gimp-check.log"
 [ "$(cat "$check_out/gimp-check.status" 2>/dev/null)" = 0 ] || status=1
 
+# Create Luminosity Masks, installed in the test profile
+rm -rf "$out/gimp-profile/plug-ins/luminosity-masks"
+mkdir -p "$out/gimp-profile/plug-ins/luminosity-masks"
+cp "$top/plug-ins/luminosity-masks/luminosity-masks.py" "$out/gimp-profile/plug-ins/luminosity-masks/"
+chmod 755 "$out/gimp-profile/plug-ins/luminosity-masks/luminosity-masks.py"
+run_prefix="timeout 1800" in_gimp $console --no-interface --no-data --no-fonts \
+  --batch-interpreter python-fu-eval \
+  -b "exec(open('$here/plugin-check.py').read())" --quit >"$out/plugin-check.log" 2>&1
+grep -E "^(PASS|FAIL|NOTE)|failed$|Traceback|^  File|Error" "$out/plugin-check.log"
+[ "$(cat "$check_out/plugin-check.status" 2>/dev/null)" = 0 ] || status=1
+if grep -E "luminosity-masks.py.*(WARNING|CRITICAL)|Traceback" "$out/plugin-check.log"; then
+    echo "FAIL  warnings or tracebacks from the plug-in, see tests/output/plugin-check.log"
+    status=1
+fi
+
 # the same settings on the gegl command line, on the scene GIMP saved
 python3 - "$check_out/cases.json" > "$check_out/cli.txt" <<'EOF' || status=1
 import json, sys

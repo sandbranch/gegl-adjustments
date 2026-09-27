@@ -37,6 +37,15 @@ foreach op, sources : operations
   )}
 endforeach
 
+# the plug-in that makes the set of luminosity mask channels, with
+# -Dplugindir (e.g. the GIMP_PLUGINDIR of gimp-plugin-devtools)
+plugindir = get_option('plugindir')
+if plugindir != ''
+  install_data('plug-ins/luminosity-masks/luminosity-masks.py',
+    install_dir: plugindir / 'luminosity-masks',
+    install_mode: 'rwxr-xr-x')
+endif
+
 test_c_args = ['-DGEGL_PLUGINSDIR="@0@"'.format(
   gegl_dep.get_variable(pkgconfig: 'pluginsdir'))]
 
