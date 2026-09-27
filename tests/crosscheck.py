@@ -4,8 +4,7 @@
 #
 #   crosscheck.py <output folder>
 #
-# $ADJ_APPLY is the command that runs tests/adj-apply.c (with the build
-# folder as its first argument). For every family alone and for all of
+# $ADJ_APPLY is the command that runs tests/adj-apply.c (tests/adj-apply.sh). For every family alone and for all of
 # them at once, Relative and Absolute:
 #
 #   - FFmpeg against the reference's copy of FFmpeg's integer arithmetic

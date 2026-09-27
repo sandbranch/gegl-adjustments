@@ -1,22 +1,23 @@
 # shellcheck shell=sh
-# Sourced by the test scripts. Sets $here (tests), $top (the repository)
-# and $out (tests/output), and defines:
+# Sourced by the test scripts. Sets $here (tests), $top and $src (the
+# repository) and $out (tests/output), and defines:
 #
 #   in_sdk <command line>   runs it in the repository, inside the Flatpak
-#                           GIMP's SDK (as gimp-plugin-devtools/gimp-build.sh
-#                           does, see below) or natively with GIMP_FLATPAK=0
+#                           GIMP's SDK (gimp-plugin-devtools/gimp-build.sh)
+#                           or natively with GIMP_FLATPAK=0
 #   in_gimp <command...>    runs a command of the GIMP Flatpak (gegl,
-#                           python3, gimp-console-3.2) with a throwaway
-#                           home: HOME and the XDG folders are set inside
-#                           the sandbox to tests/output/home, GIO uses no
-#                           GVFS (GIO_USE_VFS=local), and the variables
-#                           named in $pass_env are passed on; $run_prefix
-#                           (e.g. "timeout 600") goes before it
-#   snapshot_begin          lists the user's GIMP folders (tests/snapshot.sh)
-#   snapshot_end            lists them again and fails if anything changed
+#                           python3, gimp-console-3.2) or natively; the
+#                           variables named in $pass_env are passed on, and
+#                           $run_prefix (e.g. "--timeout=600") goes to
+#                           gimp_run
+#   snapshot_begin <name>   lists the user's folders of GIMP and other apps
+#   snapshot_end <name>     lists them again; prints PASS or FAIL and
+#                           returns 1 if anything changed
 #
-# Without the flatpak (GIMP_FLATPAK=0) in_gimp runs the command natively
-# with the same throwaway home.
+# Everything runs isolated from the user's own folders with the shared
+# tests/isolate.sh (a copy of gimp-plugin-devtools/isolate.sh): HOME and
+# the XDG folders in the throwaway tests/output/home, inside the Flatpak
+# and for flatpak run itself, and no GVFS.
 #
 # Copyright 2026 David
 # SPDX-License-Identifier: LGPL-3.0-or-later
@@ -24,84 +25,43 @@
 # ($here is set by the script that sources this one)
 # shellcheck disable=SC2154
 top=$(dirname "$here")
+src=$top
 out=$here/output
 mkdir -p "$out"
+GIMP_RUN_HOME=$out/home
+export GIMP_RUN_HOME
+mkdir -p "$GIMP_RUN_HOME"
+# shellcheck source=SCRIPTDIR/isolate.sh
+. "$here/isolate.sh"
 
-if [ -z "$GIMP_FLATPAK" ]; then
-    if command -v flatpak >/dev/null 2>&1 && flatpak info org.gimp.GIMP >/dev/null 2>&1; then
-        GIMP_FLATPAK=1
-    else
-        GIMP_FLATPAK=0
-    fi
-fi
+gimp_build=${GIMP_BUILD:-$devtools/gimp-build.sh}
 
-test_home=$out/home
-home_env="export GIO_USE_VFS=local HOME='$test_home' \
-XDG_CONFIG_HOME='$test_home/.config' XDG_DATA_HOME='$test_home/.local/share' \
-XDG_CACHE_HOME='$test_home/.cache' XDG_STATE_HOME='$test_home/.local/state' \
-CCACHE_DIR='$test_home/.cache/ccache'"
-
-# The same as gimp-build.sh, with two differences: "flatpak run
-# --sandbox" does not mount ~/.var/app/org.gimp.GIMP at all, and the
-# home is the throwaway one. (A plain "flatpak run --devel", as
-# gimp-build.sh does it, rewrites Flatpak's loader cache in
-# ~/.var/app/org.gimp.GIMP/.ld.so each time it switches between the SDK
-# and the runtime, and the SDK's ccache and babl caches go to
-# ~/.var/app/org.gimp.GIMP/cache.)
 in_sdk () {
-    mkdir -p "$test_home"
-    if [ "$GIMP_FLATPAK" = 1 ]; then
-        flatpak run --sandbox --devel --filesystem="$top" \
-          --env=PKG_CONFIG_PATH=/app/lib/pkgconfig:/app/share/pkgconfig \
-          --command=sh org.gimp.GIMP -c "$home_env; cd '$top' && $*"
+    if [ -x "$gimp_build" ]; then
+        # with GIMP_RUN_HOME, isolated as gimp-run.sh does it
+        "$gimp_build" "$top" "$*"
     else
-        (cd "$top" && sh -c "$home_env; $*")
+        # shellcheck disable=SC2016
+        gimp_run --devel --filesystem="$top" \
+          --env=PKG_CONFIG_PATH=/app/lib/pkgconfig:/app/share/pkgconfig \
+          -- sh -c 'cd "$0" && sh -c "$1"' "$top" "$*"
     fi
-}
-
-
-# the command's words, quoted for sh -c
-quote_args () {
-    q=
-    for a; do
-        a=$(printf '%s\n' "$a" | sed "s/'/'\\\\''/g")
-        q="$q '$a'"
-    done
-    printf '%s' "$q"
 }
 
 in_gimp () {
-    mkdir -p "$test_home"
-    if [ "$GIMP_FLATPAK" = 1 ]; then
-        envs=
-        for v in $pass_env; do
-            eval "val=\${$v-}"
-            envs="$envs --env=$v=$val"
-        done
-        # shellcheck disable=SC2086
-        $run_prefix flatpak run --sandbox --no-documents-portal --filesystem="$top" $envs \
-          --command=sh org.gimp.GIMP -c "$home_env; exec $(quote_args "$@")"
-    else
-        $run_prefix sh -c "$home_env; exec $(quote_args "$@")"
-    fi
+    envs=
+    for v in $pass_env; do
+        eval "val=\${$v-}"
+        envs="$envs --env=$v=$val"
+    done
+    # shellcheck disable=SC2086
+    gimp_run $run_prefix --filesystem="$top" $envs -- "$@"
 }
 
 snapshot_begin () {
-    "$here/snapshot.sh" > "$out/snapshot-before.txt"
+    snapshot_take "$out/snapshot-$1.txt"
 }
 
-# prints PASS or FAIL; returns 1 if anything changed
 snapshot_end () {
-    "$here/snapshot.sh" > "$out/snapshot-after.txt"
-    if cmp -s "$out/snapshot-before.txt" "$out/snapshot-after.txt"; then
-        echo "PASS  your GIMP folders are unchanged ($(wc -l < "$out/snapshot-after.txt") entries)"
-        return 0
-    fi
-    echo "FAIL  your GIMP folders changed:"
-    diff "$out/snapshot-before.txt" "$out/snapshot-after.txt" | head -20
-    others=$(flatpak ps --columns=application 2>/dev/null | grep -c org.gimp.GIMP)
-    [ "$others" -gt 0 ] &&
-      echo "      ($others other GIMP Flatpak instances are running; a GIMP that is" \
-           "not this test's can change these folders)"
-    return 1
+    snapshot_check "$out/snapshot-$1.txt" "" || return 1
 }

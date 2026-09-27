@@ -15,8 +15,8 @@ here=$(cd "$(dirname "$0")" && pwd)
 build=${BUILD:-tests/output/build-check}
 case $build in /*) ;; *) build=$top/$build ;; esac
 [ -x "$build/bench" ] || { echo "no $build/bench: run tests/check.sh first" >&2; exit 2; }
-snapshot_begin
+snapshot_begin bench
 in_gimp "$build/bench" "$build" "$@"
 status=$?
-snapshot_end || status=1
+snapshot_end bench || status=1
 exit $status

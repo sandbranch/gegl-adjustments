@@ -5,7 +5,7 @@
 # inside its SDK (gimp-plugin-devtools/gimp-build.sh, found next to this
 # repository or at $GIMP_BUILD); with GIMP_FLATPAK=0 it uses the system
 # GEGL. Needs no network or display. Lists the user's GIMP folders
-# before and after (tests/snapshot.sh) and fails if anything changed.
+# before and after (gimp-plugin-devtools/snapshot.sh) and fails if anything changed.
 #
 #   tests/check.sh           both builds
 #   tests/check.sh quick     only the usual build
@@ -30,7 +30,7 @@ build () {
 }
 
 status=0
-snapshot_begin
+snapshot_begin check
 
 echo "== usual build"
 build build-check -Dwarning_level=2 || status=1
@@ -102,7 +102,7 @@ else
     echo "PASS  no leaked GeglBuffers"
 fi
 
-snapshot_end || status=1
+snapshot_end check || status=1
 echo
 [ $status = 0 ] && echo "all checks passed" || echo "SOME CHECKS FAILED"
 exit $status

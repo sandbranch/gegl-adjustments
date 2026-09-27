@@ -30,17 +30,22 @@ cp "$build"/selective-color.so "$build"/black-and-white.so "$build"/blend-if.so 
    "$build"/luminosity-mask.so "$mod/"
 
 status=0
-snapshot_begin
+snapshot_begin gimp
 
 GIMP3_DIRECTORY="$out/gimp-profile"
 GEGL_PATH="$mod:/app/lib/gegl-0.4"
 ADJ_CHECK_OUT="$check_out"
 export GIMP3_DIRECTORY GEGL_PATH ADJ_CHECK_OUT
 pass_env="GIMP3_DIRECTORY GEGL_PATH ADJ_CHECK_OUT"
-[ "$GIMP_FLATPAK" = 1 ] && console=gimp-console-3.2 ||
-  console=$(command -v gimp-console-3.2 || command -v gimp-console)
+# the Flatpak's GIMP unless GIMP_FLATPAK=0 (as gimp-run.sh chooses)
+if [ "${GIMP_FLATPAK:-}" != 0 ] && command -v flatpak >/dev/null 2>&1 &&
+   flatpak info org.gimp.GIMP >/dev/null 2>&1; then
+    console=gimp-console-3.2
+else
+    console=$(command -v gimp-console-3.2 || command -v gimp-console)
+fi
 
-run_prefix="timeout 1800" in_gimp $console --no-interface --no-data --no-fonts \
+run_prefix="--timeout=1800" in_gimp $console --no-interface --no-data --no-fonts \
   --batch-interpreter python-fu-eval \
   -b "exec(open('$here/gimp-check.py').read())" --quit >"$out/gimp-check.log" 2>&1
 grep -E "^(PASS|FAIL|NOTE)|failed$|Traceback|^  File|Error" "$out/gimp-check.log"
@@ -51,7 +56,7 @@ rm -rf "$out/gimp-profile/plug-ins/luminosity-masks"
 mkdir -p "$out/gimp-profile/plug-ins/luminosity-masks"
 cp "$top/plug-ins/luminosity-masks/luminosity-masks.py" "$out/gimp-profile/plug-ins/luminosity-masks/"
 chmod 755 "$out/gimp-profile/plug-ins/luminosity-masks/luminosity-masks.py"
-run_prefix="timeout 1800" in_gimp $console --no-interface --no-data --no-fonts \
+run_prefix="--timeout=1800" in_gimp $console --no-interface --no-data --no-fonts \
   --batch-interpreter python-fu-eval \
   -b "exec(open('$here/plugin-check.py').read())" --quit >"$out/plugin-check.log" 2>&1
 grep -E "^(PASS|FAIL|NOTE)|failed$|Traceback|^  File|Error" "$out/plugin-check.log"
@@ -111,5 +116,5 @@ for label in json.load(open(os.path.join(out, 'cases.json'))):
 raise SystemExit(bad)
 EOF
 
-snapshot_end || status=1
+snapshot_end gimp || status=1
 exit $status
