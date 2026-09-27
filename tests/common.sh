@@ -9,7 +9,8 @@
 #                           python3, gimp-console-3.2) or natively; the
 #                           variables named in $pass_env are passed on, and
 #                           $run_prefix (e.g. "--timeout=600") goes to
-#                           gimp_run
+#                           gimp_run, and $extra_fs is one more folder the
+#                           Flatpak may see (e.g. "DIR:ro")
 #   snapshot_begin <name>   lists the user's folders of GIMP and other apps
 #   snapshot_end <name>     lists them again; prints PASS or FAIL and
 #                           returns 1 if anything changed
@@ -55,7 +56,7 @@ in_gimp () {
         envs="$envs --env=$v=$val"
     done
     # shellcheck disable=SC2086
-    gimp_run $run_prefix --filesystem="$top" $envs -- "$@"
+    gimp_run $run_prefix --filesystem="$top" ${extra_fs:+--filesystem="$extra_fs"} $envs -- "$@"
 }
 
 snapshot_begin () {

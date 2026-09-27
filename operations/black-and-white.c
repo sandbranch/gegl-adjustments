@@ -47,8 +47,9 @@
  * The tint gives the gray the tint color's hue and saturation the way
  * the Luminosity blend mode does (SetLum and ClipColor of the W3C
  * Compositing and Blending Level 1 specification, with its luminosity
- * 0.3 R + 0.59 G + 0.11 B). The default tint #e1d3b3 is hue 42 and
- * saturation 20 % (HSB), Photoshop's default tint.
+ * 0.3 R + 0.59 G + 0.11 B). The default tint #e1d3b3 (hue 42 and
+ * saturation 20 % in HSB) is Graphite's default for Photoshop's; not
+ * verified against Photoshop.
  *
  * Photoshop works on the document's display values, so the operation
  * works on the image's values with its own curve (R'G'B' in the image's
@@ -114,8 +115,7 @@ property_boolean (tint, _("Tint"), FALSE)
 
 property_color (tint_color, _("Tint color"), "#e1d3b3")
   description (_("The tint's hue and saturation; its lightness does not "
-                 "matter. The default is Photoshop's default tint (hue 42, "
-                 "saturation 20 %)."))
+                 "matter. The default is hue 42, saturation 20 % (HSB)."))
   ui_meta ("sensitive", "tint")
 
 #else
