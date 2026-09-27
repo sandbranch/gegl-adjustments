@@ -316,6 +316,8 @@ gegl_op_class_init (GeglOpClass *klass)
                          "green or blue value, with split sliders for soft "
                          "transitions, as the \"This Layer\" sliders of "
                          "Photoshop's Blend If do"),
+    /* GIMP adds an alpha channel to a layer without one */
+    "needs-alpha",     "true",
     "gimp:menu-path",  "<Image>/Colors",
     "gimp:menu-label", _("Blend If..."),
     NULL);
