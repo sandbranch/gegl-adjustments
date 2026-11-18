@@ -33,7 +33,10 @@ foreach op, sources : operations
     dependencies: [gegl_dep, math_dep],
     c_args: ['-DGETTEXT_PACKAGE="gegl-adjustments"'],
     install: true,
-    install_dir: moduledir,
+    # in a folder of its own: GEGL loads the modules below its plug-in
+    # folders too, and these short names (noise.so, echo.so) could clash
+    # with other operations installed there
+    install_dir: moduledir / meson.project_name(),
   )}
 endforeach
 

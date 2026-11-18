@@ -328,7 +328,8 @@ Debian and Ubuntu:
 
     sudo apt install gimp libgimp-3.0-dev meson ninja-build
 
-The operations go to `~/.local/share/gegl-0.4/plug-ins`, the plug-in to
+The operations go to `~/.local/share/gegl-0.4/plug-ins/gegl-adjustments`
+(a folder of their own, which GEGL also loads), the plug-in to
 `~/.config/GIMP/3.2/plug-ins`:
 
     meson setup build -Dmoduledir=$HOME/.local/share/gegl-0.4/plug-ins \
