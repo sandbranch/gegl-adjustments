@@ -68,26 +68,6 @@ cat > "$profile/sessionrc" <<SESSION
 (single-window-mode yes)
 (show-tabs yes)
 SESSION
-# The positions this test clicks were measured with DejaVu Sans as the
-# default sans font; the system's own default (Noto Sans on Ubuntu, for
-# one) has taller lines and moves every menu item. So the throwaway home
-# gets a fontconfig file that makes "Sans" DejaVu Sans (fonts-dejavu-core
-# on Debian and Ubuntu).
-mkdir -p "$GIMP_RUN_HOME/.config/fontconfig"
-cat >"$GIMP_RUN_HOME/.config/fontconfig/fonts.conf" <<'FONTS'
-<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
-<fontconfig>
-  <match target="pattern">
-    <test name="family"><string>Sans</string></test>
-    <edit name="family" mode="assign" binding="strong"><string>DejaVu Sans</string></edit>
-  </match>
-  <match target="pattern">
-    <test name="family"><string>sans-serif</string></test>
-    <edit name="family" mode="prepend" binding="strong"><string>DejaVu Sans</string></edit>
-  </match>
-</fontconfig>
-FONTS
 # broadwayd and GIMP in one shell (gimp_run of tests/isolate.sh: the
 # throwaway home, no GVFS)
 gimp_run --env=GDK_BACKEND=broadway --env=BROADWAY_DISPLAY=:$display \
