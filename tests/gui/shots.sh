@@ -82,31 +82,31 @@ session () {
         $cdp "$view" click:$MENU wait:1200 shot:"$docs/colors-menu.png" >/dev/null &&
           pass "menu: the Colors menu with the four filters";;
     sc)
-        open_filter 377,847 sc || return
+        open_filter 377,847 sc || { stop_all; return; }
         $cdp "$view" click:"$(p 220 113)" wait:1200 click:"$(p 37 232)" wait:1000 \
           click:"$(p "$(slider 50 -100 100)" 140)" wait:1000 \
           click:"$(p "$(slider 40 -100 100)" 226)" wait:1000 \
           click:"$(p 296 306)" wait:5000 shot:"$docs/selective-color.png" >/dev/null &&
           pass "sc: Blues, cyan +50 and black +40, split view";;
     bw)
-        open_filter 375,747 bw || return
+        open_filter 375,747 bw || { stop_all; return; }
         $cdp "$view" click:"$(p 285 113)" wait:1500 shot:"$docs/black-and-white-presets.png" \
           click:"$(p 47 174)" wait:1500 click:"$(p 18 307)" wait:5000 \
           shot:"$docs/black-and-white.png" >/dev/null &&
           pass "bw: the presets, then Red filter with Tint";;
     bi)
-        open_filter 353,772 bi || return
+        open_filter 353,772 bi || { stop_all; return; }
         $cdp "$view" click:"$(p "$(slider 60 0 255)" 142)" wait:1200 \
           click:"$(p "$(slider 150 0 255)" 169)" wait:5000 shot:"$docs/blend-if.png" >/dev/null &&
           pass "bi: gray black slider split at about 60 and 150";;
     lm)
-        open_filter 384,822 lm || return
+        open_filter 384,822 lm || { stop_all; return; }
         $cdp "$view" click:"$(p 220 113)" wait:1200 click:"$(p 30 174)" wait:1500 \
           click:"$(p "$(slider 2 1 5)" 142)" wait:5000 shot:"$docs/luminosity-mask.png" >/dev/null &&
           pass "lm: Midtones 2";;
     plugin)
         $cdp "$view" click:$MENU wait:900 click:411,722 wait:5000 >/dev/null
-        move_dialog || { fail "plugin: no dialog"; return; }
+        move_dialog || { fail "plugin: no dialog"; stop_all; return; }
         $cdp "$view" wait:800 shot:"$docs/create-luminosity-masks.png" >/dev/null
         # OK: the last button, bottom right (the plug-in's dialog has a
         # margin below its buttons); then the Channels tab
@@ -115,7 +115,7 @@ session () {
           click:1087,78 wait:1500 shot:"$docs/luminosity-mask-channels.png" >/dev/null
         pass "plugin: the dialog opened";;
     channel)
-        open_filter 384,822 channel || return
+        open_filter 384,822 channel || { stop_all; return; }
         # OK, bottom right
         r=$(dialog_rect); h=${r##*,}
         $cdp "$view" click:"$(p $((vw - 50)) $((h - 52 - 22)))" wait:3000 \
@@ -139,7 +139,7 @@ done
 xcf=$gui_out/gui-channel.xcf
 if [ -f "$xcf" ]; then
     GIMP3_DIRECTORY="$out/gimp-profile"
-    GEGL_PATH="$out/gimp-check-modules:/app/lib/gegl-0.4"
+    GEGL_PATH="$out/gimp-check-modules:$gegl_ops"
     export GIMP3_DIRECTORY GEGL_PATH
     pass_env="GIMP3_DIRECTORY GEGL_PATH"
     run_prefix="--timeout=600" in_gimp gimp-console-3.2 --no-interface --no-data --no-fonts \

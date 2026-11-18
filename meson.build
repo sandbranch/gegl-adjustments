@@ -9,8 +9,8 @@ gegl_dep = dependency('gegl-0.4', version: '>= 0.4.62')
 math_dep = meson.get_compiler('c').find_library('m', required: false)
 
 # GEGL loads user operations from $XDG_DATA_HOME/gegl-0.4/plug-ins, which is
-# ~/.local/share/gegl-0.4/plug-ins, or for the Flatpak version of GIMP
-# ~/.var/app/org.gimp.GIMP/data/gegl-0.4/plug-ins.
+# ~/.local/share/gegl-0.4/plug-ins (for the native GIMP; the GIMP Flatpak
+# is not supported).
 moduledir = get_option('moduledir')
 if moduledir == ''
   moduledir = gegl_dep.get_variable(pkgconfig: 'pluginsdir')

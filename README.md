@@ -44,7 +44,8 @@ None of the four exists in GEGL or GIMP 3.2.6. Checked on 2026-09-27:
   weights), `gegl:saturation`, `gegl:hue-chroma` and the unbuilt workshop
   `selective-hue-saturation` (a hue range with hue, saturation and
   lightness, not CMYK inks).
-- The Flatpak GIMP 3.2.6, `gegl --list-all`: 259 operations ship with it.
+- The GIMP 3.2.6 Flatpak used at the time (2026-09), `gegl --list-all`:
+  259 operations ship with it.
   A listing that also reads the operations installed in
   `~/.var/app/org.gimp.GIMP/data/gegl-0.4/plug-ins` (on the machine of
   this work mostly LinuxBeaver's; the survey counted 472, it is 473 now)
@@ -321,24 +322,29 @@ that Selective Color keeps an infinite channel infinite.
 
 ## Building and installing
 
-Needs meson, ninja, a C compiler and the GEGL development files (0.4.62 or
-newer).
+For the native GIMP 3 (the GIMP Flatpak is not supported). Needs meson,
+ninja, a C compiler and the GEGL development files (0.4.62 or newer); on
+Debian and Ubuntu:
+
+    sudo apt install gimp libgimp-3.0-dev meson ninja-build
+
+The operations go to `~/.local/share/gegl-0.4/plug-ins`, the plug-in to
+`~/.config/GIMP/3.2/plug-ins`:
 
     meson setup build -Dmoduledir=$HOME/.local/share/gegl-0.4/plug-ins \
       -Dplugindir=$HOME/.config/GIMP/3.2/plug-ins
     ninja -C build install
 
-For the Flatpak version of GIMP, build inside it with
-[gimp-devtools](https://github.com/sandbranch/gimp-devtools),
-which installs the operations into
-`~/.var/app/org.gimp.GIMP/data/gegl-0.4/plug-ins` and the plug-in into
-GIMP's plug-in folder:
+Or the same through
+[gimp-devtools](https://github.com/sandbranch/gimp-devtools), which
+finds both folders:
 
     gimp-build.sh . meson setup build -Dmoduledir=\$GEGL_OPDIR -Dplugindir=\$GIMP_PLUGINDIR
     gimp-build.sh . ninja -C build install
 
 Restart GIMP after installing. Without `-Dplugindir` the plug-in is not
-installed. On the command line:
+installed. On the gegl command line (on Debian and Ubuntu the package
+`gegl`):
 
     gegl photo.jpg -o graded.jpg -- adj:selective-color reds-cyan=-30 reds-black=10 method=absolute
     gegl photo.jpg -o bw.jpg -- adj:black-and-white preset=yellow-filter tint=true
@@ -348,13 +354,13 @@ installed. On the command line:
 None needs the network or a display. Every one runs isolated from your
 own folders with tests/isolate.sh (a copy of gimp-devtools'
 isolate.sh: HOME and the XDG folders in a throwaway tests/output/home,
-also for flatpak run itself, and no GVFS), and compares listings of your
+and no GVFS), and compares listings of your
 GIMP, Blender, Godot, Krita and Tiled folders before and after
 (gimp-devtools/snapshot.sh): each suite fails if anything there
 changed.
 
-- `tests/check.sh`: 130 checks (tests/check.c), built and run twice in the
-  Flatpak SDK, as usual and with AddressSanitizer and UBSan (with leak
+- `tests/check.sh`: 130 checks (tests/check.c), built and run twice
+  against the native GIMP's GEGL, as usual and with AddressSanitizer and UBSan (with leak
   checks of this code). Selective Color against a reference of the
   published formulas for every family alone and all at once, both
   methods; Bœsch's Photoshop values; each family changes only its own
@@ -379,14 +385,15 @@ changed.
   (so FFmpeg is read right); the operation matches the formulas to 3.2e-7
   and FFmpeg to at most 2 codes (0 with one family at 8 bits). Black &
   White against its Python reference (2.7e-7).
-- `tests/gimp-check.sh`: in the Flatpak GIMP 3.2.6 without a window, each
+- `tests/gimp-check.sh`: in the native GIMP 3.2.8 without a window, each
   operation (7 settings) as a non-destructive Gimp.DrawableFilter on RGB
   images of all seven precisions and a grayscale one: it is a filter, its
   settings come back after an XCF save and load, and it gives what plain
   GEGL and the gegl command line give. Blend If on a layer without alpha,
   the PDB's refusal on channels, and Create Luminosity Masks (channel
   names, order and values at 8 bits and in float, from a layer and from
-  the visible image). 78 checks.
+  the visible image). 78 checks. The comparison needs the gegl command
+  line (the package `gegl`).
 - `tests/gui/shots.sh`: the dialogs in GIMP on a Broadway display with a
   headless Chrome, the screenshots in docs/, and the live filter on a
   channel through an XCF.
@@ -394,8 +401,9 @@ changed.
 
 ## Speed
 
-On a Ryzen 9 5900X (12 cores, 24 threads), a 6000 x 4000 image, GIMP's
-Flatpak GEGL 0.4.72, while other tests were running (load about 4):
+On a Ryzen 9 5900X (12 cores, 24 threads), a 6000 x 4000 image, GEGL
+0.4.72 (measured 2026-09 with the GEGL of the GIMP Flatpak; the native
+GIMP 3.2.8 here has the same GEGL version), while other tests were running (load about 4):
 
 | | 24 threads, float | 24 threads, 8 bit | 1 thread, float |
 |---|---|---|---|

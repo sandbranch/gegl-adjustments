@@ -6,8 +6,8 @@
 `adj:luminosity-mask`, and the Create Luminosity Masks plug-in (README).
 Tested with tests/check.sh (130 checks, also under ASan and UBSan),
 tests/crosscheck.sh (FFmpeg's selectivecolor: its arithmetic read
-exactly, the operation within its rounding), tests/gimp-check.sh (GIMP
-3.2.6 Flatpak: every precision, grayscale, XCF, the command line, the
+exactly, the operation within its rounding), tests/gimp-check.sh (the
+native GIMP 3.2.8: every precision, grayscale, XCF, the command line, the
 plug-in), tests/gui/shots.sh (the dialogs on Broadway, looked at, and a
 live filter on a channel through an XCF), tests/bench.sh.
 
@@ -67,7 +67,8 @@ live filter on a channel through an XCF), tests/bench.sh.
   (`app/main.c`, `gimp_unique_batch_run`): a GUI test must pass
   `--new-instance`, or its script runs in whatever GIMP is open, the
   user's included. `gimp-console` implies it.
-- `flatpak run --sandbox` keeps `~/.var/app/<app>` out of the sandbox
+- (2026-09, when the tests still ran the GIMP Flatpak, which is no
+  longer supported) `flatpak run --sandbox` keeps `~/.var/app/<app>` out of the sandbox
   entirely (no `.ld.so` rewrite, no caches) while `--filesystem` still
   works; for headless GIMP and SDK builds an alternative to setting HOME
   for flatpak run. GTK programs then lack the session bus that glycin's

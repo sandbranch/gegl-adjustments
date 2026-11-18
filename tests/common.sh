@@ -2,23 +2,22 @@
 # Sourced by the test scripts. Sets $here (tests), $top and $src (the
 # repository) and $out (tests/output), and defines:
 #
-#   in_sdk <command line>   runs it in the repository, inside the Flatpak
-#                           GIMP's SDK (gimp-devtools/gimp-build.sh)
-#                           or natively with GIMP_FLATPAK=0
-#   in_gimp <command...>    runs a command of the GIMP Flatpak (gegl,
-#                           python3, gimp-console-3.2) or natively; the
-#                           variables named in $pass_env are passed on, and
+#   in_sdk <command line>   runs it in the repository against the native
+#                           GIMP (gimp-devtools/gimp-build.sh)
+#   in_gimp <command...>    runs a command (gegl, python3,
+#                           gimp-console-3.2) isolated; the variables
+#                           named in $pass_env are passed on, and
 #                           $run_prefix (e.g. "--timeout=600") goes to
-#                           gimp_run, and $extra_fs is one more folder the
-#                           Flatpak may see (e.g. "DIR:ro")
+#                           gimp_run
 #   snapshot_begin <name>   lists the user's folders of GIMP and other apps
 #   snapshot_end <name>     lists them again; prints PASS or FAIL and
 #                           returns 1 if anything changed
 #
 # Everything runs isolated from the user's own folders with the shared
 # tests/isolate.sh (a copy of gimp-devtools/isolate.sh): HOME and
-# the XDG folders in the throwaway tests/output/home, inside the Flatpak
-# and for flatpak run itself, and no GVFS.
+# the XDG folders in the throwaway tests/output/home, and no GVFS.
+# $gegl_ops is GEGL's own folder of operations, for a GEGL_PATH (which
+# replaces the folders GEGL searches).
 #
 # Copyright 2026 David
 # SPDX-License-Identifier: LGPL-3.0-or-later
@@ -36,6 +35,9 @@ mkdir -p "$GIMP_RUN_HOME"
 . "$here/isolate.sh"
 
 gimp_build=${GIMP_BUILD:-$devtools/gimp-build.sh}
+# (used by the scripts that source this one)
+# shellcheck disable=SC2034
+gegl_ops=$(pkg-config --variable=pluginsdir gegl-0.4 2>/dev/null)
 
 in_sdk () {
     if [ -x "$gimp_build" ]; then
@@ -43,9 +45,7 @@ in_sdk () {
         "$gimp_build" "$top" "$*"
     else
         # shellcheck disable=SC2016
-        gimp_run --devel --filesystem="$top" \
-          --env=PKG_CONFIG_PATH=/app/lib/pkgconfig:/app/share/pkgconfig \
-          -- sh -c 'cd "$0" && sh -c "$1"' "$top" "$*"
+        gimp_run -- sh -c 'cd "$0" && sh -c "$1"' "$top" "$*"
     fi
 }
 
@@ -56,7 +56,7 @@ in_gimp () {
         envs="$envs --env=$v=$val"
     done
     # shellcheck disable=SC2086
-    gimp_run $run_prefix --filesystem="$top" ${extra_fs:+--filesystem="$extra_fs"} $envs -- "$@"
+    gimp_run $run_prefix $envs -- "$@"
 }
 
 snapshot_begin () {

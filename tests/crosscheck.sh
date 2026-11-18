@@ -4,8 +4,8 @@
 # tests/reference.py), and adj:black-and-white with its reference.
 # FFmpeg and numpy run on this machine; the operations run through
 # tests/adj-apply.c (tests/adj-apply.sh), built by tests/check.sh in
-# tests/output/build-check (or $BUILD), inside the Flatpak GIMP or
-# natively with GIMP_FLATPAK=0, isolated from the user's folders. Writes to tests/output/crosscheck. Lists the
+# tests/output/build-check (or $BUILD), with the native GIMP's GEGL,
+# isolated from the user's folders. Writes to tests/output/crosscheck. Lists the
 # user's GIMP folders before and after and fails if anything changed.
 # Exits non-zero if a case fails, 2 if ffmpeg or numpy are missing.
 #
